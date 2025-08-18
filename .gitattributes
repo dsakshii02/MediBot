@@ -1,0 +1,7 @@
+# Force GitHub to count Python correctly
+*.py linguist-detectable=true
+
+# Ignore shell-like files in stats
+*.sh linguist-detectable=false
+requirements.txt linguist-detectable=false
+Dockerfile linguist-detectable=false
