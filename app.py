@@ -9,10 +9,9 @@ from dotenv import load_dotenv
 from src.prompt import *
 import os
 
-# Flask app
+
 app = Flask(__name__)
 
-# Load .env file
 load_dotenv()
 
 PINECONE_API_KEY = os.environ.get('PINECONE_API_KEY')
@@ -21,28 +20,27 @@ GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 os.environ["PINECONE_API_KEY"] = PINECONE_API_KEY
 os.environ["GEMINI_API_KEY"] = GEMINI_API_KEY
 
-# Load embeddings
 embeddings = download_hugging_face_embeddings()
 
-# Pinecone index name
+
 index_name = "medical-chatbot"
 
-# Connect to existing Pinecone index
+
 docsearch = PineconeVectorStore.from_existing_index(
     index_name=index_name,
     embedding=embeddings
 )
 
-# Retriever
+
 retriever = docsearch.as_retriever(search_type="similarity", search_kwargs={"k": 3})
 
-# Gemini LLM
+
 chatModel = ChatGoogleGenerativeAI(
     model="gemini-1.5-flash",
     google_api_key=GEMINI_API_KEY
 )
 
-# Prompt
+
 prompt = ChatPromptTemplate.from_messages(
     [
         ("system", system_prompt),
@@ -50,11 +48,10 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-# RAG chain
+
 question_answer_chain = create_stuff_documents_chain(chatModel, prompt)
 rag_chain = create_retrieval_chain(retriever, question_answer_chain)
 
-# Routes
 @app.route("/")
 def index():
     return render_template('chat.html')
